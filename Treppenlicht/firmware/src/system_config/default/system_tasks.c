@@ -11,7 +11,7 @@
   Description:
     This file contains source code necessary to maintain system's polled state
     machines.  It implements the "SYS_Tasks" function that calls the individual
-    "Tasks" functions for all the MPLAB Harmony modules in the system.
+    "Tasks" functions for all polled MPLAB Harmony modules in the system.
 
   Remarks:
     This file requires access to the systemObjects global data structure that
@@ -54,18 +54,6 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
 #include "system_config.h"
 #include "system_definitions.h"
-#include "app.h"
-
-
-// *****************************************************************************
-// *****************************************************************************
-// Section: Local Prototypes
-// *****************************************************************************
-// *****************************************************************************
- 
-static void _SYS_Tasks ( void );
-void _SYS_TMR_Tasks(void);
-static void _APP_Tasks(void);
 
 
 // *****************************************************************************
@@ -84,79 +72,17 @@ static void _APP_Tasks(void);
 
 void SYS_Tasks ( void )
 {
-    /* Create OS Thread for Sys Tasks. */
-    xTaskCreate((TaskFunction_t) _SYS_Tasks,
-                "Sys Tasks",
-                1024, NULL, 1, NULL);
+    /* Maintain system services */
+    SYS_DEVCON_Tasks(sysObj.sysDevcon);
 
- 
-    /* Create task for System Timer state machine*/
-    /* Create OS Thread for SYS_TMR Tasks. */
-    xTaskCreate((TaskFunction_t) _SYS_TMR_Tasks,
-                "SYS_TMR Tasks",
-                1024, NULL, 1, NULL);
-
-    /* Create OS Thread for APP Tasks. */
-    xTaskCreate((TaskFunction_t) _APP_Tasks,
-                "APP Tasks",
-                1024, NULL, 1, NULL);
-
-    /**************
-     * Start RTOS * 
-     **************/
-    vTaskStartScheduler(); /* This function never returns. */
-}
-
-
-/*******************************************************************************
-  Function:
-    void _SYS_Tasks ( void )
-
-  Summary:
-    Maintains state machines of system modules.
-*/
-
-static void _SYS_Tasks ( void )
-{
-    while(1)
-    {
-        /* Maintain system services */
-        SYS_DEVCON_Tasks(sysObj.sysDevcon);
-
-        /* Maintain Device Drivers */
+    /* Maintain Device Drivers */
         DRV_TMR_Tasks(sysObj.drvTmr0);
 
-        /* Maintain Middleware */
+    /* Maintain Middleware & Other Libraries */
 
-        /* Task Delay */
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
-    }
-}
 
-void _SYS_TMR_Tasks(void)
-{
-    while(1)
-    {
-        SYS_TMR_Tasks(sysObj.sysTmr);
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
-    }
- }
-
-/*******************************************************************************
-  Function:
-    void _APP_Tasks ( void )
-
-  Summary:
-    Maintains state machine of APP.
-*/
-
-static void _APP_Tasks(void)
-{
-    while(1)
-    {
-        APP_Tasks();
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
-    }
+    /* Maintain the application's state machine. */
+    APP_Tasks();
 }
 
 

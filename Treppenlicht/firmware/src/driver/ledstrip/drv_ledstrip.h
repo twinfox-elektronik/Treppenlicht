@@ -3,28 +3,19 @@
 
 #include "system/system.h"
 #include "driver/driver_common.h"
+#include "driver/tmr/drv_tmr.h"
+#include "peripheral/ports/plib_ports.h"
 
 #define DRV_LEDSTRIP_INDEX_0  0
-#define DRV_LEDSTRIP_INDEX_1  1
-#define DRV_LEDSTRIP_INDEX_2  2
-#define DRV_LEDSTRIP_INDEX_3  3
-#define DRV_LEDSTRIP_INDEX_4  4
-#define DRV_LEDSTRIP_INDEX_5  5
-#define DRV_LEDSTRIP_INDEX_6  6
-#define DRV_LEDSTRIP_INDEX_7  7
-#define DRV_LEDSTRIP_INDEX_8  8
-#define DRV_LEDSTRIP_INDEX_9  9
-#define DRV_LEDSTRIP_INDEX_10 10
-#define DRV_LEDSTRIP_INDEX_11 11
-#define DRV_LEDSTRIP_INDEX_12 12
-#define DRV_LEDSTRIP_INDEX_13 13
-#define DRV_LEDSTRIP_INDEX_14 14
 
 typedef struct
 {
     SYS_MODULE_INIT moduleInit;
     TMR_MODULE_ID timerModuleID;
+    INT_SOURCE timerInterruptSource;
     uint32_t periodMs;
+    PORTS_CHANNEL led_port;
+    PORTS_BIT_POS led_pin_pos;
 } DRV_LEDSTRIP_INIT;
 
 SYS_MODULE_OBJ DRV_LEDSTRIP_Initialize(

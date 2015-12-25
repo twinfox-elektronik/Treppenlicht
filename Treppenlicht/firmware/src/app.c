@@ -54,6 +54,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 // *****************************************************************************
 
 #include "app.h"
+#include "driver/ledstrip/drv_ledstrip.h"
 
 // *****************************************************************************
 // *****************************************************************************
@@ -103,6 +104,16 @@ APP_DATA appData;
 // *****************************************************************************
 // *****************************************************************************
 
+
+DRV_LEDSTRIP_INIT ledstrip_init = {
+    .moduleInit = { .value = SYS_MODULE_POWER_RUN_FULL },
+    .timerModuleID = 1,
+    .timerInterruptSource = INT_SOURCE_TIMER_4,
+    .periodMs = 500,
+    .led_port = PORT_CHANNEL_B,
+    .led_pin_pos = PORTS_BIT_POS_15,
+};
+
 /*******************************************************************************
   Function:
     void APP_Initialize ( void )
@@ -116,9 +127,9 @@ void APP_Initialize ( void )
     /* Place the App state machine in its initial state. */
     appData.state = APP_STATE_INIT;
     
-    /* TODO: Initialize your application's state machine and other
-     * parameters.
-     */
+    appData.ledstrip_driver = DRV_LEDSTRIP_Initialize(
+            DRV_LEDSTRIP_INDEX_0,
+            (SYS_MODULE_INIT*)&ledstrip_init);
 }
 
 
@@ -138,10 +149,15 @@ void APP_Tasks ( void )
         /* Application's initial state. */
         case APP_STATE_INIT:
         {
+            appData.state = APP_STATE_RUNNING;
             break;
         }
 
-        /* TODO: implement your application state machine.*/
+        case APP_STATE_RUNNING:
+        {
+            DRV_LEDSTRIP_Tasks(appData.ledstrip_driver);
+            break;
+        }
 
         /* The default state should never be executed. */
         default:

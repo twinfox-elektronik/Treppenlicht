@@ -2,7 +2,6 @@
 
 DRV_LEDSTRIP_OBJ driver_objects[DRV_LEDSTRIP_INSTANCES_NUMBER];
 DRV_LEDSTRIP_CLIENT_OBJ client_objects[DRV_LEDSTRIP_CLIENTS_NUMBER];
-DRV_LEDSTRIP_COMMON_DATA_OBJ common_data;
 
 SYS_MODULE_OBJ DRV_LEDSTRIP_Initialize(
     const SYS_MODULE_INDEX index,
@@ -24,28 +23,23 @@ SYS_MODULE_OBJ DRV_LEDSTRIP_Initialize(
         return SYS_MODULE_OBJ_INVALID;
     }
     
-    obj->inUse = false;
     obj->status = SYS_STATUS_READY;
-    obj->periodMs = driver_init->periodMs;
+    obj->inUse = false;
+    obj->driver_init = *driver_init;
     obj->current_state = DRV_LEDSTRIP_STATE_INIT;
-    
-    if (common_data.membersAreInitialized == false)
-    {
-        uint32_t countsPer10MicroSeconds = 
-                SYS_CLK_PeripheralFrequencyGet(CLK_BUS_PERIPHERAL_1) / 100000;
-        
-        //PLIB_TMR_Period32BitSet()
-    }
+    obj->timer_handle = DRV_HANDLE_INVALID;
+    obj->counter = 0;
+    obj->counter_max = 10;
     
     return (SYS_MODULE_OBJ)index;
 }
 
-/*void DRV_LEDSTRIP_TimerCallback(
-    uintptr_t context,
-    uint32_t currTick)
+void _DRV_LEDSTRIP_AlarmCallback(uintptr_t context, uint32_t alarmCount)
 {
     DRV_LEDSTRIP_OBJ* obj = &driver_objects[context];
-}*/
+    
+    obj->counter += alarmCount;
+}
 
 void DRV_LEDSTRIP_Tasks(SYS_MODULE_OBJ object)
 {
@@ -55,17 +49,47 @@ void DRV_LEDSTRIP_Tasks(SYS_MODULE_OBJ object)
     {
         case DRV_LEDSTRIP_STATE_INIT:
         {
-            /*SYS_TMR_CallbackPeriodic(
-                    obj->periodMs,
+            if (obj->timer_handle == DRV_HANDLE_INVALID)
+            {
+                obj->timer_handle = DRV_TMR_Open(
+                        DRV_TMR_INDEX_0,
+                        DRV_IO_INTENT_EXCLUSIVE);
+                break;
+            }
+            if (DRV_TMR_ClientStatus(obj->timer_handle) != DRV_TMR_CLIENT_STATUS_READY)
+            {
+                break;
+            }
+            
+            DRV_TMR_AlarmRegister(
+                    obj->timer_handle,
+                    DRV_TMR_CounterFrequencyGet(obj->timer_handle) / 10000,
+                    true,
                     object,
-                    DRV_LEDSTRIP_TimerCallback);*/
+                    _DRV_LEDSTRIP_AlarmCallback);
+            DRV_TMR_Start(obj->timer_handle);
             
             obj->current_state = DRV_LEDSTRIP_STATE_READY;
             break;
         }
-            
+        
         case DRV_LEDSTRIP_STATE_READY:
         {
+            PLIB_PORTS_PinToggle(
+                PORTS_ID_0,
+                PORT_CHANNEL_B,
+                PORTS_BIT_POS_14);
+            
+            //obj->counter += DRV_TMR_AlarmHasElapsed(obj->timer_handle);
+            if (obj->counter >= obj->counter_max)
+            {
+                obj->counter = 0;
+                
+                PLIB_PORTS_PinToggle(
+                        PORTS_ID_0,
+                        obj->driver_init.led_port,
+                        obj->driver_init.led_pin_pos);
+            }
             break;
         }
     }

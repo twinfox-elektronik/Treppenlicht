@@ -87,10 +87,10 @@ extern "C" {
 typedef enum
 {
 	/* Application's state machine's initial state. */
-	APP_STATE_INIT=0,
+	APP_STATE_INIT = 0,
 
-	/* TODO: Define states used by the application state machine. */
-
+    APP_STATE_RUNNING,
+            
 } APP_STATES;
 
 
@@ -112,8 +112,7 @@ typedef struct
     /* The application's current state */
     APP_STATES state;
 
-    /* TODO: Define any additional data used by the application. */
-
+    SYS_MODULE_OBJ ledstrip_driver;
 
 } APP_DATA;
 

@@ -126,18 +126,6 @@ const DRV_TMR_INIT drvTmr0InitData =
     .asyncWriteEnable = false,
 };
 // </editor-fold>
-//<editor-fold defaultstate="collapsed" desc="DRV_I2C Initialization Data">
-// </editor-fold>
-//<editor-fold defaultstate="collapsed" desc="SYS_TMR Initialization Data">
-/*** TMR Service Initialization Data ***/
-const SYS_TMR_INIT sysTmrInitData =
-{
-    .moduleInit = {SYS_MODULE_POWER_RUN_FULL},
-    .drvIndex = DRV_TMR_INDEX_0,
-    .tmrFreq = 1000, 
-};
-
-// </editor-fold>
 
 // *****************************************************************************
 // *****************************************************************************
@@ -205,21 +193,15 @@ void SYS_Initialize ( void* data )
     /* Initialize Drivers */
 
     sysObj.drvTmr0 = DRV_TMR_Initialize(DRV_TMR_INDEX_0, (SYS_MODULE_INIT *)&drvTmr0InitData);
-
-    SYS_INT_VectorPrioritySet(INT_VECTOR_T2, INT_PRIORITY_LEVEL1);
-    SYS_INT_VectorSubprioritySet(INT_VECTOR_T2, INT_SUBPRIORITY_LEVEL0);
  
  
-     DRV_I2C0_Initialize();
-
-
+ 
     /* Initialize System Services */
     SYS_INT_Initialize();  
 
-    /*** TMR Service Initialization Code ***/
-    sysObj.sysTmr  = SYS_TMR_Initialize(SYS_TMR_INDEX_0, (const SYS_MODULE_INIT  * const)&sysTmrInitData);
-
     /* Initialize Middleware */
+    /* Enable Global Interrupts */
+    SYS_INT_Enable();
 
     /* Initialize the Application */
     APP_Initialize();
