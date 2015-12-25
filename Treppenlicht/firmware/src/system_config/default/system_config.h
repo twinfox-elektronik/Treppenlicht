@@ -92,8 +92,16 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
 /*** Ports System Service Configuration ***/
 
-#define SYS_PORT_B_ANSEL        0x301f
-#define SYS_PORT_B_TRIS         0x3fff
+#define SYS_PORT_A_ANSEL        0x3
+#define SYS_PORT_A_TRIS         0x3
+#define SYS_PORT_A_LAT          0x0
+#define SYS_PORT_A_ODC          0x0
+#define SYS_PORT_A_CNPU         0x0
+#define SYS_PORT_A_CNPD         0x0
+#define SYS_PORT_A_CNEN         0x0
+
+#define SYS_PORT_B_ANSEL        0x3
+#define SYS_PORT_B_TRIS         0x303
 #define SYS_PORT_B_LAT          0x0
 #define SYS_PORT_B_ODC          0x0
 #define SYS_PORT_B_CNPU         0x0

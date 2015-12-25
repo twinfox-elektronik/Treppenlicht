@@ -9,6 +9,7 @@ SYS_MODULE_OBJ DRV_LEDSTRIP_Initialize(
 {
     DRV_LEDSTRIP_OBJ* obj = NULL;
     DRV_LEDSTRIP_INIT* driver_init = (DRV_LEDSTRIP_INIT*)init;
+    int i_led;
     
     if (index >= DRV_LEDSTRIP_INSTANCES_NUMBER)
     {
@@ -29,7 +30,11 @@ SYS_MODULE_OBJ DRV_LEDSTRIP_Initialize(
     obj->current_state = DRV_LEDSTRIP_STATE_INIT;
     obj->timer_handle = DRV_HANDLE_INVALID;
     obj->counter = 0;
-    obj->counter_max = 10;
+    obj->counter_max = 100;
+    for (i_led = 0; i_led < DRV_LEDSTRIP_MAX_NUMBER_LEDS; i_led++)
+    {
+        obj->counter_toggle[i_led] = 0;
+    }
     
     return (SYS_MODULE_OBJ)index;
 }
@@ -38,12 +43,17 @@ void _DRV_LEDSTRIP_AlarmCallback(uintptr_t context, uint32_t alarmCount)
 {
     DRV_LEDSTRIP_OBJ* obj = &driver_objects[context];
     
-    obj->counter += alarmCount;
+    obj->counter++;
+    if (obj->counter >= obj->counter_max)
+    {
+        obj->counter = 0;
+    }
 }
 
 void DRV_LEDSTRIP_Tasks(SYS_MODULE_OBJ object)
 {
     DRV_LEDSTRIP_OBJ* obj = &driver_objects[object];
+    int i_led;
     
     switch (obj->current_state)
     {
@@ -52,7 +62,7 @@ void DRV_LEDSTRIP_Tasks(SYS_MODULE_OBJ object)
             if (obj->timer_handle == DRV_HANDLE_INVALID)
             {
                 obj->timer_handle = DRV_TMR_Open(
-                        DRV_TMR_INDEX_0,
+                        obj->driver_init.timerIndex,
                         DRV_IO_INTENT_EXCLUSIVE);
                 break;
             }
@@ -63,7 +73,8 @@ void DRV_LEDSTRIP_Tasks(SYS_MODULE_OBJ object)
             
             DRV_TMR_AlarmRegister(
                     obj->timer_handle,
-                    DRV_TMR_CounterFrequencyGet(obj->timer_handle) / 10000,
+                    DRV_TMR_CounterFrequencyGet(obj->timer_handle) /
+                        obj->driver_init.frequency / 100,
                     true,
                     object,
                     _DRV_LEDSTRIP_AlarmCallback);
@@ -75,20 +86,22 @@ void DRV_LEDSTRIP_Tasks(SYS_MODULE_OBJ object)
         
         case DRV_LEDSTRIP_STATE_READY:
         {
-            PLIB_PORTS_PinToggle(
-                PORTS_ID_0,
-                PORT_CHANNEL_B,
-                PORTS_BIT_POS_14);
-            
-            //obj->counter += DRV_TMR_AlarmHasElapsed(obj->timer_handle);
-            if (obj->counter >= obj->counter_max)
+            for (i_led = 0; i_led < DRV_LEDSTRIP_MAX_NUMBER_LEDS; i_led++)
             {
-                obj->counter = 0;
-                
-                PLIB_PORTS_PinToggle(
-                        PORTS_ID_0,
-                        obj->driver_init.led_port,
-                        obj->driver_init.led_pin_pos);
+                if (obj->counter < obj->counter_toggle[i_led])
+                {
+                    PLIB_PORTS_PinSet(
+                            PORTS_ID_0,
+                            obj->driver_init.led_port[i_led],
+                            obj->driver_init.led_pin_pos[i_led]);
+                }
+                else
+                {
+                    PLIB_PORTS_PinClear(
+                            PORTS_ID_0,
+                            obj->driver_init.led_port[i_led],
+                            obj->driver_init.led_pin_pos[i_led]);
+                }
             }
             break;
         }
@@ -140,7 +153,13 @@ DRV_HANDLE DRV_LEDSTRIP_Open(
 
 void DRV_LEDSTRIP_DimLight(
     DRV_HANDLE handle,
-    int value)
+    uint32_t led_index,
+    uint32_t value)
 {
+    DRV_LEDSTRIP_CLIENT_OBJ* client_obj = (DRV_LEDSTRIP_CLIENT_OBJ*)handle;
     
+    if (led_index < DRV_LEDSTRIP_MAX_NUMBER_LEDS)
+    {
+        client_obj->driver->counter_toggle[led_index] = value;
+    }
 }

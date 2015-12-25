@@ -107,11 +107,40 @@ APP_DATA appData;
 
 DRV_LEDSTRIP_INIT ledstrip_init = {
     .moduleInit = { .value = SYS_MODULE_POWER_RUN_FULL },
-    .timerModuleID = 1,
-    .timerInterruptSource = INT_SOURCE_TIMER_4,
-    .periodMs = 500,
-    .led_port = PORT_CHANNEL_B,
-    .led_pin_pos = PORTS_BIT_POS_15,
+    .timerIndex = DRV_TMR_INDEX_0,
+    .frequency = 100,
+    .led_port = {
+            PORT_CHANNEL_B,
+            PORT_CHANNEL_B,
+            PORT_CHANNEL_A,
+            PORT_CHANNEL_A,
+            PORT_CHANNEL_B,
+            PORT_CHANNEL_A,
+            PORT_CHANNEL_B,
+            PORT_CHANNEL_B,
+            PORT_CHANNEL_B,
+            PORT_CHANNEL_B,
+            PORT_CHANNEL_B,
+            PORT_CHANNEL_B,
+            PORT_CHANNEL_B,
+            PORT_CHANNEL_B,
+            PORT_CHANNEL_B},
+    .led_pin_pos = {
+            PORTS_BIT_POS_2,
+            PORTS_BIT_POS_3,
+            PORTS_BIT_POS_2,
+            PORTS_BIT_POS_3,
+            PORTS_BIT_POS_4,
+            PORTS_BIT_POS_4,
+            PORTS_BIT_POS_5,
+            PORTS_BIT_POS_6,
+            PORTS_BIT_POS_7,
+            PORTS_BIT_POS_10,
+            PORTS_BIT_POS_11,
+            PORTS_BIT_POS_12,
+            PORTS_BIT_POS_13,
+            PORTS_BIT_POS_14,
+            PORTS_BIT_POS_15},
 };
 
 /*******************************************************************************
@@ -143,6 +172,10 @@ void APP_Initialize ( void )
 
 void APP_Tasks ( void )
 {
+    int i_led;
+    
+    DRV_LEDSTRIP_Tasks(appData.ledstrip_driver);
+    
     /* Check the application's current state. */
     switch ( appData.state )
     {
@@ -150,12 +183,19 @@ void APP_Tasks ( void )
         case APP_STATE_INIT:
         {
             appData.state = APP_STATE_RUNNING;
+            
+            appData.ledstrip_client = DRV_LEDSTRIP_Open(
+                    DRV_LEDSTRIP_INDEX_0,
+                    DRV_IO_INTENT_EXCLUSIVE);
             break;
         }
 
         case APP_STATE_RUNNING:
         {
-            DRV_LEDSTRIP_Tasks(appData.ledstrip_driver);
+            for (i_led = 0; i_led < DRV_LEDSTRIP_MAX_NUMBER_LEDS; i_led++)
+            {
+                DRV_LEDSTRIP_DimLight(appData.ledstrip_client, i_led, i_led * 10);
+            }
             break;
         }
 

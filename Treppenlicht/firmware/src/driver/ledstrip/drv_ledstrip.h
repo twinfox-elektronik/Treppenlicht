@@ -7,24 +7,20 @@
 #include "peripheral/ports/plib_ports.h"
 
 #define DRV_LEDSTRIP_INDEX_0  0
+#define DRV_LEDSTRIP_MAX_NUMBER_LEDS 15
 
 typedef struct
 {
     SYS_MODULE_INIT moduleInit;
-    TMR_MODULE_ID timerModuleID;
-    INT_SOURCE timerInterruptSource;
-    uint32_t periodMs;
-    PORTS_CHANNEL led_port;
-    PORTS_BIT_POS led_pin_pos;
+    SYS_MODULE_INDEX timerIndex;
+    uint32_t frequency;
+    PORTS_CHANNEL led_port[DRV_LEDSTRIP_MAX_NUMBER_LEDS];
+    PORTS_BIT_POS led_pin_pos[DRV_LEDSTRIP_MAX_NUMBER_LEDS];
 } DRV_LEDSTRIP_INIT;
 
 SYS_MODULE_OBJ DRV_LEDSTRIP_Initialize(
     const SYS_MODULE_INDEX index,
     const SYS_MODULE_INIT * const init);
-
-//void DRV_LEDSTRIP_Deinitialize(SYS_MODULE_OBJ object);
-
-//SYS_STATUS DRV_LEDSTRIP_Status(SYS_MODULE_OBJ object);
 
 void DRV_LEDSTRIP_Tasks(SYS_MODULE_OBJ object);
 
@@ -34,6 +30,7 @@ DRV_HANDLE DRV_LEDSTRIP_Open(
 
 void DRV_LEDSTRIP_DimLight(
     DRV_HANDLE handle,
-    int value);
+    uint32_t led_index,
+    uint32_t value);
 
 #endif

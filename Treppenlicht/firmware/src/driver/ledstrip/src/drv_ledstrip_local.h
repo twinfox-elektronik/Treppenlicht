@@ -7,8 +7,6 @@
 #include "driver/ledstrip/config/drv_ledstrip_config.h"
 #include "driver/tmr/drv_tmr.h"
 #include "system/debug/sys_debug.h"
-#include "system/tmr/sys_tmr.h"
-#include "system/int/sys_int.h"
 
 typedef enum
 {
@@ -24,6 +22,7 @@ typedef struct
     DRV_LEDSTRIP_STATE current_state;
     DRV_HANDLE timer_handle;
     uint32_t counter;
+    uint32_t counter_toggle[DRV_LEDSTRIP_MAX_NUMBER_LEDS];
     uint32_t counter_max;
 } DRV_LEDSTRIP_OBJ;
 

@@ -113,6 +113,7 @@ typedef struct
     APP_STATES state;
 
     SYS_MODULE_OBJ ledstrip_driver;
+    DRV_HANDLE ledstrip_client;
 
 } APP_DATA;
 

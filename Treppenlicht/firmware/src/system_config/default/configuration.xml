@@ -99,7 +99,7 @@
       <Template>
         <Name>sys_ports_static.c</Name>
         <Path>Source Files/app/system_config/default/framework/system/ports/src</Path>
-        <Checksum>D26E6D81E4395F8161FCBFF3A7B8CF7D</Checksum>
+        <Checksum>7A48B1C824A47BC92DAACA35E3C0AD4C</Checksum>
       </Template>
       <Template>
         <Name>system_init.c</Name>
@@ -132,7 +132,7 @@
       <Template>
         <Name>system_config.h</Name>
         <Path>Header Files/app/system_config/default</Path>
-        <Checksum>4716112BF5CADF9495BC4D7ADC372FE5</Checksum>
+        <Checksum>77237D5E47846899C20DE92BD5D287B0</Checksum>
       </Template>
       <Template>
         <Name>app.h</Name>
