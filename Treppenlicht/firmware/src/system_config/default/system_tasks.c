@@ -74,9 +74,11 @@ void SYS_Tasks ( void )
 {
     /* Maintain system services */
     SYS_DEVCON_Tasks(sysObj.sysDevcon);
+    SYS_TMR_Tasks(sysObj.sysTmr);
 
     /* Maintain Device Drivers */
         DRV_TMR_Tasks(sysObj.drvTmr0);
+        DRV_TMR_Tasks(sysObj.drvTmr1);
 
     /* Maintain Middleware & Other Libraries */
 

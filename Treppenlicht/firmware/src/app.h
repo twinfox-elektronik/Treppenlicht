@@ -114,6 +114,11 @@ typedef struct
 
     SYS_MODULE_OBJ ledstrip_driver;
     DRV_HANDLE ledstrip_client;
+    
+    SYS_TMR_HANDLE delay_timer;
+    
+    int32_t dim_value;
+    int32_t dim_value_step;
 
 } APP_DATA;
 

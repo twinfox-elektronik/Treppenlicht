@@ -107,6 +107,15 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #define SYS_PORT_B_CNPU         0x0
 #define SYS_PORT_B_CNPD         0x0
 #define SYS_PORT_B_CNEN         0x0
+/*** Timer System Service Configuration ***/
+#define SYS_TMR_POWER_STATE             SYS_MODULE_POWER_RUN_FULL
+#define SYS_TMR_DRIVER_INDEX            DRV_TMR_INDEX_1
+#define SYS_TMR_MAX_CLIENT_OBJECTS      5
+#define SYS_TMR_FREQUENCY               1000
+#define SYS_TMR_FREQUENCY_TOLERANCE     10
+#define SYS_TMR_UNIT_RESOLUTION         10000
+#define SYS_TMR_CLIENT_TOLERANCE        10
+#define SYS_TMR_INTERRUPT_NOTIFICATION  false
 
 
 // *****************************************************************************
@@ -116,7 +125,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 // *****************************************************************************
 
 /*** Timer Driver Configuration ***/
-#define DRV_TMR_INSTANCES_NUMBER           1
+#define DRV_TMR_INSTANCES_NUMBER           2
 #define DRV_TMR_CLIENTS_NUMBER             1
 #define DRV_TMR_INTERRUPT_MODE             false
 
@@ -128,6 +137,15 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #define DRV_TMR_OPERATION_MODE_IDX0         DRV_TMR_OPERATION_MODE_16_BIT
 #define DRV_TMR_ASYNC_WRITE_ENABLE_IDX0     false
 #define DRV_TMR_POWER_STATE_IDX0            SYS_MODULE_POWER_RUN_FULL
+
+/*** Timer Driver 1 Configuration ***/
+#define DRV_TMR_PERIPHERAL_ID_IDX1          TMR_ID_4
+#define DRV_TMR_INTERRUPT_SOURCE_IDX1       INT_SOURCE_TIMER_4
+#define DRV_TMR_CLOCK_SOURCE_IDX1           DRV_TMR_CLKSOURCE_INTERNAL
+#define DRV_TMR_PRESCALE_IDX1               TMR_PRESCALE_VALUE_256
+#define DRV_TMR_OPERATION_MODE_IDX1         DRV_TMR_OPERATION_MODE_16_BIT
+#define DRV_TMR_ASYNC_WRITE_ENABLE_IDX1     false
+#define DRV_TMR_POWER_STATE_IDX1            SYS_MODULE_POWER_RUN_FULL
 
  
  

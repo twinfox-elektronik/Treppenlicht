@@ -52,6 +52,9 @@
           <logicalFolder name="f4" displayName="ports" projectFiles="true">
             <itemPath>../../../../../Programme/Microchip/harmony/v1_06_01/framework/system/ports/sys_ports.h</itemPath>
           </logicalFolder>
+          <logicalFolder name="f5" displayName="tmr" projectFiles="true">
+            <itemPath>../../../../../Programme/Microchip/harmony/v1_06_01/framework/system/tmr/sys_tmr.h</itemPath>
+          </logicalFolder>
           <itemPath>../../../../../Programme/Microchip/harmony/v1_06_01/framework/system/system.h</itemPath>
         </logicalFolder>
       </logicalFolder>
@@ -121,6 +124,11 @@
           <logicalFolder name="f3" displayName="ports" projectFiles="true">
             <logicalFolder name="f1" displayName="src" projectFiles="true">
               <itemPath>../../../../../Programme/Microchip/harmony/v1_06_01/framework/system/ports/src/sys_ports.c</itemPath>
+            </logicalFolder>
+          </logicalFolder>
+          <logicalFolder name="f4" displayName="tmr" projectFiles="true">
+            <logicalFolder name="f1" displayName="src" projectFiles="true">
+              <itemPath>../../../../../Programme/Microchip/harmony/v1_06_01/framework/system/tmr/src/sys_tmr.c</itemPath>
             </logicalFolder>
           </logicalFolder>
         </logicalFolder>
@@ -321,6 +329,7 @@
         <property key="UART1" value="true"/>
         <property key="UART2" value="true"/>
         <property key="USB" value="true"/>
+        <property key="firmware.download.all" value="false"/>
         <property key="hwtoolclock.frcindebug" value="false"/>
         <property key="memories.aux" value="false"/>
         <property key="memories.bootflash" value="true"/>

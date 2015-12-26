@@ -187,18 +187,38 @@ void APP_Tasks ( void )
             appData.ledstrip_client = DRV_LEDSTRIP_Open(
                     DRV_LEDSTRIP_INDEX_0,
                     DRV_IO_INTENT_EXCLUSIVE);
+            appData.delay_timer = SYS_TMR_DelayMS(100);
+            appData.dim_value = 0;
+            appData.dim_value_step = 1;
+            
             break;
         }
 
         case APP_STATE_RUNNING:
         {
-            for (i_led = 0; i_led < DRV_LEDSTRIP_MAX_NUMBER_LEDS; i_led++)
+            if (SYS_TMR_DelayStatusGet(appData.delay_timer))
             {
-                DRV_LEDSTRIP_DimLight(appData.ledstrip_client, i_led, i_led * 10);
+                appData.dim_value += appData.dim_value_step;
+                if (appData.dim_value >= DRV_LEDSTRIP_MAX_DIMMING_VALUE)
+                {
+                    appData.dim_value_step = -1;
+                }
+                if (appData.dim_value <= 0)
+                {
+                    appData.dim_value_step = +1;
+                }
+                
+                for (i_led = 0; i_led < DRV_LEDSTRIP_MAX_NUMBER_LEDS; i_led++)
+                {
+                    DRV_LEDSTRIP_DimLight(appData.ledstrip_client, i_led, appData.dim_value);
+                }
+                
+                appData.delay_timer = SYS_TMR_DelayMS(5);
             }
+            
             break;
         }
-
+        
         /* The default state should never be executed. */
         default:
         {

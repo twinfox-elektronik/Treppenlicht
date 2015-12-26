@@ -51,6 +51,14 @@
         <Path>Source Files/framework/system/devcon/src</Path>
       </File>
       <File>
+        <Name>sys_tmr.h</Name>
+        <Path>Header Files/framework/system/tmr</Path>
+      </File>
+      <File>
+        <Name>sys_tmr.c</Name>
+        <Path>Source Files/framework/system/tmr/src</Path>
+      </File>
+      <File>
         <Name>sys_ports.h</Name>
         <Path>Header Files/framework/system/ports</Path>
       </File>
@@ -104,7 +112,7 @@
       <Template>
         <Name>system_init.c</Name>
         <Path>Source Files/app/system_config/default</Path>
-        <Checksum>27AA4CAD9D65192046A093586D7EDBE5</Checksum>
+        <Checksum>BC8EF7726DE638FC92D8AF627D0E96C4</Checksum>
       </Template>
       <Template>
         <Name>main.c</Name>
@@ -113,7 +121,7 @@
       <Template>
         <Name>system_definitions.h</Name>
         <Path>Header Files/app/system_config/default</Path>
-        <Checksum>7243F1B50A1ED8FA759A0AD454E78181</Checksum>
+        <Checksum>B2DFE60868805D7D0FCDAC70BF3F3E72</Checksum>
       </Template>
       <Template>
         <Name>system_exceptions.c</Name>
@@ -127,12 +135,12 @@
       <Template>
         <Name>system_tasks.c</Name>
         <Path>Source Files/app/system_config/default</Path>
-        <Checksum>85F2944347FD3F0BDB42C9ADB56DE44A</Checksum>
+        <Checksum>A4364FD5A5523F69796F87A47231C809</Checksum>
       </Template>
       <Template>
         <Name>system_config.h</Name>
         <Path>Header Files/app/system_config/default</Path>
-        <Checksum>77237D5E47846899C20DE92BD5D287B0</Checksum>
+        <Checksum>201B7E141B5747A99A45F0B6BEEE0C84</Checksum>
       </Template>
       <Template>
         <Name>app.h</Name>

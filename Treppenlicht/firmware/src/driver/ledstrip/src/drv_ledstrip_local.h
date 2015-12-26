@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include <math.h>
 #include "driver/ledstrip/drv_ledstrip.h"
 #include "driver/ledstrip/config/drv_ledstrip_config.h"
 #include "driver/tmr/drv_tmr.h"

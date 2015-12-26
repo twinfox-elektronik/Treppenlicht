@@ -8,6 +8,7 @@
 
 #define DRV_LEDSTRIP_INDEX_0  0
 #define DRV_LEDSTRIP_MAX_NUMBER_LEDS 15
+#define DRV_LEDSTRIP_MAX_DIMMING_VALUE 200
 
 typedef struct
 {
