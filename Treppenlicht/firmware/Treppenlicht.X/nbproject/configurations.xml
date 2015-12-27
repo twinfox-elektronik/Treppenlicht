@@ -30,10 +30,14 @@
           </logicalFolder>
         </logicalFolder>
         <itemPath>../src/app.h</itemPath>
+        <itemPath>../src/drv_ioexpander.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="framework" projectFiles="true">
         <logicalFolder name="f1" displayName="driver" projectFiles="true">
-          <logicalFolder name="f1" displayName="tmr" projectFiles="true">
+          <logicalFolder name="f1" displayName="i2c" projectFiles="true">
+            <itemPath>../../../../../Programme/Microchip/harmony/v1_06_01/framework/driver/i2c/drv_i2c.h</itemPath>
+          </logicalFolder>
+          <logicalFolder name="f2" displayName="tmr" projectFiles="true">
             <itemPath>../../../../../Programme/Microchip/harmony/v1_06_01/framework/driver/tmr/drv_tmr.h</itemPath>
           </logicalFolder>
           <itemPath>../../../../../Programme/Microchip/harmony/v1_06_01/framework/driver/driver.h</itemPath>
@@ -98,10 +102,18 @@
         </logicalFolder>
         <itemPath>../src/app.c</itemPath>
         <itemPath>../src/main.c</itemPath>
+        <itemPath>../src/drv_ioexpander.c</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="framework" projectFiles="true">
         <logicalFolder name="f1" displayName="driver" projectFiles="true">
-          <logicalFolder name="f1" displayName="tmr" projectFiles="true">
+          <logicalFolder name="f1" displayName="i2c" projectFiles="true">
+            <logicalFolder name="f1" displayName="src" projectFiles="true">
+              <logicalFolder name="f1" displayName="dynamic" projectFiles="true">
+                <itemPath>../../../../../Programme/Microchip/harmony/v1_06_01/framework/driver/i2c/src/dynamic/drv_i2c.c</itemPath>
+              </logicalFolder>
+            </logicalFolder>
+          </logicalFolder>
+          <logicalFolder name="f2" displayName="tmr" projectFiles="true">
             <logicalFolder name="f1" displayName="src" projectFiles="true">
               <logicalFolder name="f1" displayName="dynamic" projectFiles="true">
                 <itemPath>../../../../../Programme/Microchip/harmony/v1_06_01/framework/driver/tmr/src/dynamic/drv_tmr.c</itemPath>
@@ -194,7 +206,7 @@
         <property key="generate-micro-compressed-code" value="false"/>
         <property key="isolate-each-function" value="true"/>
         <property key="make-warnings-into-errors" value="false"/>
-        <property key="optimization-level" value="-O1"/>
+        <property key="optimization-level" value=""/>
         <property key="place-data-into-section" value="false"/>
         <property key="post-instruction-scheduling" value="default"/>
         <property key="pre-instruction-scheduling" value="default"/>
@@ -329,7 +341,6 @@
         <property key="UART1" value="true"/>
         <property key="UART2" value="true"/>
         <property key="USB" value="true"/>
-        <property key="firmware.download.all" value="false"/>
         <property key="hwtoolclock.frcindebug" value="false"/>
         <property key="memories.aux" value="false"/>
         <property key="memories.bootflash" value="true"/>
