@@ -1,4 +1,5 @@
 #include "driver/i2c/drv_i2c.h"
+#include "driver/i2c/drv_i2c_static.h"
 
 typedef enum
 {
@@ -24,50 +25,8 @@ uint8_t portB;
 void DRV_IOEXPANDER_Initialize()
 {
     state = DRV_IOEXPANDER_STATE_INIT;
-    device_adress = 0x20;
-    //gpio_register_address = 0x12;
-    gpio_register_address = 0x00;
-}
-
-void _DRV_IOEXPANDER_EventHandler(
-    DRV_I2C_BUFFER_EVENT event,
-    DRV_I2C_BUFFER_HANDLE bufferHandle,
-    uintptr_t context)
-{
-    switch(event)
-    {
-        case DRV_I2C_SEND_STOP_EVENT:
-        {
-            DRV_I2C_StopEventSend(i2c_driver);
-            
-            break;
-        }
-        
-        case DRV_I2C_SEND_RESTART_EVENT:
-        {
-            DRV_I2C_RestartEventSend(i2c_driver);
-            
-            break;
-        }
-
-        case DRV_I2C_BUFFER_EVENT_COMPLETE:
-        {
-            buffer_completed = true;
-            
-            break;
-        }
-
-        case DRV_I2C_BUFFER_EVENT_ERROR:
-        {
-            break;
-        }
-
-        default:
-        {
-            break;
-        }
-    }
-
+    device_adress = 0x40;
+    gpio_register_address = 0x12;
 }
 
 void DRV_IOEXPANDER_Tasks()
@@ -76,43 +35,76 @@ void DRV_IOEXPANDER_Tasks()
     {
         case DRV_IOEXPANDER_STATE_INIT:
         {
-            i2c_driver = DRV_I2C_Open(DRV_I2C_INDEX_0, DRV_IO_INTENT_READWRITE);
-            if (i2c_driver == DRV_HANDLE_INVALID)
-            {
+            if (!DRV_I2C0_MasterStart())
                 break;
-            }
-            
-            DRV_I2C_BufferEventHandlerSet(
-                    i2c_driver,
-                    _DRV_IOEXPANDER_EventHandler,
-                    0);
-            
-            state = DRV_IOEXPANDER_STATE_CONFIG;
-            
-            break;
-        }
-        
-        case DRV_IOEXPANDER_STATE_CONFIG:
-        {
-            buffer_completed = false;
-            
-            DRV_I2C_BufferAddWrite(
-                    i2c_driver,
-                    &device_adress,
-                    &gpio_register_address,
-                    sizeof(gpio_register_address),
-                    NULL);
-            
-            state = DRV_IOEXPANDER_STATE_CONFIG_WAIT;
-            
-            break;
-        }
-        
-        case DRV_IOEXPANDER_STATE_CONFIG_WAIT:
-        {
-            if (buffer_completed)
+            DRV_I2C0_WaitForStartComplete();
+            if (!DRV_I2C0_ByteWrite(device_adress))
+                break;
+            DRV_I2C0_WaitForByteWriteToComplete();
+            if (DRV_I2C0_WriteByteAcknowledged())
             {
-                state = DRV_IOEXPANDER_STATE_READ_PORTA;
+                //
+                /*while (!DRV_I2C0_ByteWrite(0x0C));
+                DRV_I2C0_WaitForByteWriteToComplete();
+                
+                while (!DRV_I2C0_ByteWrite(0xFF));
+                DRV_I2C0_WaitForByteWriteToComplete();
+                
+                while (!DRV_I2C0_ByteWrite(0xFF));
+                DRV_I2C0_WaitForByteWriteToComplete();
+                
+                while (!DRV_I2C0_MasterRestart());
+                DRV_I2C0_WaitForStartComplete();
+                
+                while (!DRV_I2C0_ByteWrite(device_adress));
+                DRV_I2C0_WaitForByteWriteToComplete();*/
+                //
+                
+                //
+                while (!DRV_I2C0_ByteWrite(0x00));
+                DRV_I2C0_WaitForByteWriteToComplete();
+                
+                while (!DRV_I2C0_ByteWrite(0b01111111));
+                DRV_I2C0_WaitForByteWriteToComplete();
+                
+                while (!DRV_I2C0_MasterRestart());
+                DRV_I2C0_WaitForStartComplete();
+                
+                while (!DRV_I2C0_ByteWrite(device_adress));
+                DRV_I2C0_WaitForByteWriteToComplete();
+                if (!DRV_I2C0_WriteByteAcknowledged())
+                    break;
+                //
+                while (!DRV_I2C0_ByteWrite(0x14));
+                DRV_I2C0_WaitForByteWriteToComplete();
+                
+                while (!DRV_I2C0_ByteWrite(0b10000000));
+                DRV_I2C0_WaitForByteWriteToComplete();
+                
+                while (!DRV_I2C0_MasterRestart());
+                DRV_I2C0_WaitForStartComplete();
+                
+                while (!DRV_I2C0_ByteWrite(device_adress));
+                DRV_I2C0_WaitForByteWriteToComplete();
+                if (!DRV_I2C0_WriteByteAcknowledged())
+                    break;
+                //
+                
+                //while (!DRV_I2C0_ByteWrite(gpio_register_address));
+                while (!DRV_I2C0_ByteWrite(0x14));
+                DRV_I2C0_WaitForByteWriteToComplete();
+                
+                if (DRV_I2C0_WriteByteAcknowledged())
+                {
+                    while (!DRV_I2C0_MasterRestart());
+                    DRV_I2C0_WaitForStartComplete();
+                    while (!DRV_I2C0_ByteWrite(device_adress | 0x01));
+                    DRV_I2C0_WaitForByteWriteToComplete();
+                    if (DRV_I2C0_WriteByteAcknowledged())
+                    {
+                        state = DRV_IOEXPANDER_STATE_READ_PORTA;
+                    }
+                }
             }
             
             break;
@@ -120,68 +112,28 @@ void DRV_IOEXPANDER_Tasks()
         
         case DRV_IOEXPANDER_STATE_READ_PORTA:
         {
-            buffer_completed = false;
+            while (!DRV_I2C0_SetUpByteRead());
+            while (!DRV_I2C0_WaitForReadByteAvailable());
+            portA = DRV_I2C0_ByteRead();
+
+            DRV_I2C0_MasterACKSend();
+            DRV_I2C0_WaitForACKOrNACKComplete();
             
-            /*DRV_I2C_BufferAddRead(
-                    i2c_driver,
-                    &device_adress,
-                    &portA,
-                    sizeof(portA),
-                    NULL);*/
-            DRV_I2C_BufferAddWriteRead(
-                    i2c_driver,
-                    &device_adress,
-                    &gpio_register_address,
-                    sizeof(gpio_register_address),
-                    &portA,
-                    sizeof(portA),
-                    NULL);
-            
-            state = DRV_IOEXPANDER_STATE_READ_PORTA_WAIT;
-            
-            break;
-        }
-        
-        case DRV_IOEXPANDER_STATE_READ_PORTA_WAIT:
-        {
-            if (buffer_completed)
-            {
-                state = DRV_IOEXPANDER_STATE_READ_PORTB;
-            }
-            
+            state = DRV_IOEXPANDER_STATE_READ_PORTB;
+                        
             break;
         }
         
         case DRV_IOEXPANDER_STATE_READ_PORTB:
         {
-            buffer_completed = false;
+            while (!DRV_I2C0_SetUpByteRead());
+            while (!DRV_I2C0_WaitForReadByteAvailable());
+            portB = DRV_I2C0_ByteRead();
+
+            DRV_I2C0_MasterACKSend();
+            DRV_I2C0_WaitForACKOrNACKComplete();
             
-            /*DRV_I2C_BufferAddRead(
-                    i2c_driver,
-                    &device_adress,
-                    &portB,
-                    sizeof(portB),
-                    NULL);*/
-            DRV_I2C_BufferAddWriteRead(
-                    i2c_driver,
-                    &device_adress,
-                    &gpio_register_address,
-                    sizeof(gpio_register_address),
-                    &portB,
-                    sizeof(portB),
-                    NULL);
-            
-            state = DRV_IOEXPANDER_STATE_READ_PORTB_WAIT;
-            
-            break;
-        }
-        
-        case DRV_IOEXPANDER_STATE_READ_PORTB_WAIT:
-        {
-            if (buffer_completed)
-            {
-                state = DRV_IOEXPANDER_STATE_READ_PORTA;
-            }
+            state = DRV_IOEXPANDER_STATE_READ_PORTA;
             
             break;
         }
@@ -191,4 +143,9 @@ void DRV_IOEXPANDER_Tasks()
             break;
         }
     }
+}
+
+uint8_t DRV_IOEXPANDER_GetButtonStates()
+{
+    return portA;
 }

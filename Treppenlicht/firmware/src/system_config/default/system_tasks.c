@@ -79,7 +79,6 @@ void SYS_Tasks ( void )
     /* Maintain Device Drivers */
         DRV_TMR_Tasks(sysObj.drvTmr0);
         DRV_TMR_Tasks(sysObj.drvTmr1);
-    DRV_I2C_Tasks(sysObj.drvI2C0);
 
     /* Maintain Middleware & Other Libraries */
 

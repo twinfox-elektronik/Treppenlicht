@@ -42,6 +42,8 @@ DRV_LEDSTRIP_INIT ledstrip_init = {
             PORTS_BIT_POS_15},
 };
 
+uint8_t portA;
+
 void APP_Initialize ( void )
 {
     appData.state = APP_STATE_INIT;
@@ -78,24 +80,36 @@ void APP_Tasks ( void )
 
         case APP_STATE_RUNNING:
         {
-            if (SYS_TMR_DelayStatusGet(appData.delay_timer))
+            portA = DRV_IOEXPANDER_GetButtonStates();
+            
+            if (portA == 0)
             {
-                appData.dim_value += appData.dim_value_step;
-                if (appData.dim_value >= DRV_LEDSTRIP_MAX_DIMMING_VALUE)
+                if (SYS_TMR_DelayStatusGet(appData.delay_timer))
                 {
-                    appData.dim_value_step = -1;
+                    appData.dim_value += appData.dim_value_step;
+                    if (appData.dim_value >= DRV_LEDSTRIP_MAX_DIMMING_VALUE)
+                    {
+                        appData.dim_value_step = -1;
+                    }
+                    if (appData.dim_value <= 0)
+                    {
+                        appData.dim_value_step = +1;
+                    }
+
+                    for (i_led = 0; i_led < DRV_LEDSTRIP_MAX_NUMBER_LEDS; i_led++)
+                    {
+                        DRV_LEDSTRIP_DimLight(appData.ledstrip_client, i_led, appData.dim_value);
+                    }
+
+                    appData.delay_timer = SYS_TMR_DelayMS(5);
                 }
-                if (appData.dim_value <= 0)
-                {
-                    appData.dim_value_step = +1;
-                }
-                
+            }
+            else
+            {
                 for (i_led = 0; i_led < DRV_LEDSTRIP_MAX_NUMBER_LEDS; i_led++)
                 {
-                    DRV_LEDSTRIP_DimLight(appData.ledstrip_client, i_led, appData.dim_value);
+                    DRV_LEDSTRIP_DimLight(appData.ledstrip_client, i_led, DRV_LEDSTRIP_MAX_DIMMING_VALUE);
                 }
-                
-                appData.delay_timer = SYS_TMR_DelayMS(5);
             }
             
             break;

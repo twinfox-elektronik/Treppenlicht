@@ -59,10 +59,6 @@
         <Path>Source Files/framework/system/tmr/src</Path>
       </File>
       <File>
-        <Name>drv_i2c.c</Name>
-        <Path>Source Files/framework/driver/i2c/src/dynamic</Path>
-      </File>
-      <File>
         <Name>sys_ports.h</Name>
         <Path>Header Files/framework/system/ports</Path>
       </File>
@@ -95,10 +91,6 @@
         <Path>Header Files/framework/system</Path>
       </File>
       <File>
-        <Name>drv_i2c.h</Name>
-        <Path>Header Files/framework/driver/i2c</Path>
-      </File>
-      <File>
         <Name>sys_module.h</Name>
         <Path>Header Files/framework/system/common</Path>
       </File>
@@ -120,7 +112,12 @@
       <Template>
         <Name>system_init.c</Name>
         <Path>Source Files/app/system_config/default</Path>
-        <Checksum>DFF4DDB39D29D6670743CAFC09A7B7A3</Checksum>
+        <Checksum>E0DB757468984D848A2B14A7F2037666</Checksum>
+      </Template>
+      <Template>
+        <Name>drv_i2c_static.c</Name>
+        <Path>Source Files/app/system_config/default/framework/driver/i2c/src</Path>
+        <Checksum>86CDFB545845249C5B07D851F03ACF1D</Checksum>
       </Template>
       <Template>
         <Name>main.c</Name>
@@ -129,7 +126,7 @@
       <Template>
         <Name>system_definitions.h</Name>
         <Path>Header Files/app/system_config/default</Path>
-        <Checksum>317DCC81265148E41614DCA3BEA18200</Checksum>
+        <Checksum>4E6802D6C6B4FBBDD74703BC4B420514</Checksum>
       </Template>
       <Template>
         <Name>system_exceptions.c</Name>
@@ -141,14 +138,19 @@
         <Path>Source Files/app</Path>
       </Template>
       <Template>
+        <Name>drv_i2c_static.h</Name>
+        <Path>Header Files/app/system_config/default/framework/driver/i2c</Path>
+        <Checksum>BDDCED2F6306E40124682DAB41CC554F</Checksum>
+      </Template>
+      <Template>
         <Name>system_tasks.c</Name>
         <Path>Source Files/app/system_config/default</Path>
-        <Checksum>EA9956523B0423ABDFA78CA650B6B0C6</Checksum>
+        <Checksum>A4364FD5A5523F69796F87A47231C809</Checksum>
       </Template>
       <Template>
         <Name>system_config.h</Name>
         <Path>Header Files/app/system_config/default</Path>
-        <Checksum>12CC2EF8D66AFC2FF2FBB4DBAD08A6D6</Checksum>
+        <Checksum>201B7E141B5747A99A45F0B6BEEE0C84</Checksum>
       </Template>
       <Template>
         <Name>app.h</Name>
