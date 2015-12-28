@@ -136,8 +136,6 @@ const DRV_TMR_INIT drvTmr1InitData =
     .asyncWriteEnable = false,
 };
 // </editor-fold>
-//<editor-fold defaultstate="collapsed" desc="DRV_I2C Initialization Data">
-// </editor-fold>
 //<editor-fold defaultstate="collapsed" desc="SYS_TMR Initialization Data">
 /*** TMR Service Initialization Data ***/
 const SYS_TMR_INIT sysTmrInitData =
@@ -218,9 +216,7 @@ void SYS_Initialize ( void* data )
     sysObj.drvTmr1 = DRV_TMR_Initialize(DRV_TMR_INDEX_1, (SYS_MODULE_INIT *)&drvTmr1InitData);
  
  
-     DRV_I2C0_Initialize();
-
-
+ 
     /* Initialize System Services */
     SYS_INT_Initialize();  
 

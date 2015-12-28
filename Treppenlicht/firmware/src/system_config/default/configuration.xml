@@ -112,12 +112,7 @@
       <Template>
         <Name>system_init.c</Name>
         <Path>Source Files/app/system_config/default</Path>
-        <Checksum>E0DB757468984D848A2B14A7F2037666</Checksum>
-      </Template>
-      <Template>
-        <Name>drv_i2c_static.c</Name>
-        <Path>Source Files/app/system_config/default/framework/driver/i2c/src</Path>
-        <Checksum>86CDFB545845249C5B07D851F03ACF1D</Checksum>
+        <Checksum>BC8EF7726DE638FC92D8AF627D0E96C4</Checksum>
       </Template>
       <Template>
         <Name>main.c</Name>
@@ -126,7 +121,7 @@
       <Template>
         <Name>system_definitions.h</Name>
         <Path>Header Files/app/system_config/default</Path>
-        <Checksum>4E6802D6C6B4FBBDD74703BC4B420514</Checksum>
+        <Checksum>B2DFE60868805D7D0FCDAC70BF3F3E72</Checksum>
       </Template>
       <Template>
         <Name>system_exceptions.c</Name>
@@ -138,11 +133,6 @@
         <Path>Source Files/app</Path>
       </Template>
       <Template>
-        <Name>drv_i2c_static.h</Name>
-        <Path>Header Files/app/system_config/default/framework/driver/i2c</Path>
-        <Checksum>BDDCED2F6306E40124682DAB41CC554F</Checksum>
-      </Template>
-      <Template>
         <Name>system_tasks.c</Name>
         <Path>Source Files/app/system_config/default</Path>
         <Checksum>A4364FD5A5523F69796F87A47231C809</Checksum>
@@ -150,7 +140,7 @@
       <Template>
         <Name>system_config.h</Name>
         <Path>Header Files/app/system_config/default</Path>
-        <Checksum>201B7E141B5747A99A45F0B6BEEE0C84</Checksum>
+        <Checksum>41421949E8AB89853E874CD18A5E1032</Checksum>
       </Template>
       <Template>
         <Name>app.h</Name>

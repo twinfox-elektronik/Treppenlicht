@@ -92,7 +92,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
 /*** Ports System Service Configuration ***/
 
-#define SYS_PORT_A_ANSEL        0x3
+#define SYS_PORT_A_ANSEL        0x0
 #define SYS_PORT_A_TRIS         0x3
 #define SYS_PORT_A_LAT          0x0
 #define SYS_PORT_A_ODC          0x0
@@ -149,7 +149,6 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
  
  
-
 // *****************************************************************************
 // *****************************************************************************
 // Section: Middleware & Other Library Configuration
