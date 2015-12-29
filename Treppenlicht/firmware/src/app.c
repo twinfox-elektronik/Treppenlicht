@@ -11,6 +11,15 @@ typedef enum
     APP_STATE_RUNNING,
 } APP_STATES;
 
+typedef enum
+{
+    APP_LED_STATE_UNKNOWN = 0,
+    APP_LED_STATE_ON_DOWN,
+    APP_LED_STATE_OFF_DOWN,
+    APP_LED_STATE_ON_UP,
+    APP_LED_STATE_OFF_UP,
+} APP_LED_STATE;
+
 struct
 {
     /* The application's current state */
@@ -24,6 +33,8 @@ struct
     const Command (*commands)[COMMANDS_MAX][DRV_LEDSTRIP_MAX_NUMBER_LEDS];
     int command_index[DRV_LEDSTRIP_MAX_NUMBER_LEDS];
     CommandState command_state[DRV_LEDSTRIP_MAX_NUMBER_LEDS];
+    
+    APP_LED_STATE led_state;
 
 } appData;
 
@@ -35,9 +46,9 @@ DRV_LEDSTRIP_INIT ledstrip_init = {
             PORT_CHANNEL_B,
             PORT_CHANNEL_B,
             PORT_CHANNEL_A,
-            PORT_CHANNEL_A,
             PORT_CHANNEL_B,
             PORT_CHANNEL_A,
+            PORT_CHANNEL_A,
             PORT_CHANNEL_B,
             PORT_CHANNEL_B,
             PORT_CHANNEL_B,
@@ -46,23 +57,25 @@ DRV_LEDSTRIP_INIT ledstrip_init = {
             PORT_CHANNEL_B,
             PORT_CHANNEL_B,
             PORT_CHANNEL_B,
-            PORT_CHANNEL_B},
+            PORT_CHANNEL_B,
+    },
     .led_pin_pos = {
-            PORTS_BIT_POS_2,
-            PORTS_BIT_POS_3,
-            PORTS_BIT_POS_2,
+            PORTS_BIT_POS_10,
             PORTS_BIT_POS_3,
             PORTS_BIT_POS_4,
             PORTS_BIT_POS_4,
-            PORTS_BIT_POS_5,
+            PORTS_BIT_POS_3,
+            PORTS_BIT_POS_2,
+            PORTS_BIT_POS_12,
+            PORTS_BIT_POS_2,
+            PORTS_BIT_POS_11,
+            PORTS_BIT_POS_13,
+            PORTS_BIT_POS_15,
+            PORTS_BIT_POS_14,
             PORTS_BIT_POS_6,
             PORTS_BIT_POS_7,
-            PORTS_BIT_POS_10,
-            PORTS_BIT_POS_11,
-            PORTS_BIT_POS_12,
-            PORTS_BIT_POS_13,
-            PORTS_BIT_POS_14,
-            PORTS_BIT_POS_15},
+            PORTS_BIT_POS_5,
+    },
 };
 
 #define BUTTON_1 0
@@ -195,32 +208,105 @@ bool APP_UpdateLedStates()
 void APP_LoadProfile()
 {
     int i_led;
+    APP_LED_STATE last_state;
+    int profile = 0;
     
-    for (i_led = 0; i_led < DRV_LEDSTRIP_MAX_NUMBER_LEDS; i_led++)
-    {
-        appData.command_index[i_led] = 0;
-        appData.command_state[i_led].current_wait_time = 0;
-    }
-
+    last_state = appData.led_state;
     if (APP_IsChannelActive(BUTTON_1))
     {
-        appData.commands = &profile2_on_down;
+        appData.led_state = APP_LED_STATE_ON_UP;
     }
     else if (APP_IsChannelActive(BUTTON_2))
     {
-        appData.commands = &profile3_on_down;
-    }
-    else if (APP_IsChannelActive(BUTTON_3))
-    {
-        appData.commands = &profile4_on_down;
-    }
-    else if (APP_IsChannelActive(BUTTON_4))
-    {
-        appData.commands = &profile5_on_down;
+        appData.led_state = APP_LED_STATE_ON_DOWN;
     }
     else
     {
-        appData.commands = &profile1_off_down;
+        if (appData.led_state == APP_LED_STATE_ON_UP)
+        {
+            appData.led_state = APP_LED_STATE_OFF_UP;
+        }
+        else
+        {
+            appData.led_state = APP_LED_STATE_OFF_DOWN;
+        }
+    }
+    
+    if (APP_IsChannelActive(BUTTON_3))
+    {
+        profile = 2;
+    }
+    else
+    {
+        profile = 1;
+    }
+    
+    if (appData.led_state != last_state)
+    {
+        for (i_led = 0; i_led < DRV_LEDSTRIP_MAX_NUMBER_LEDS; i_led++)
+        {
+            appData.command_index[i_led] = 0;
+            appData.command_state[i_led].current_wait_time = 0;
+        }
+        
+        switch (appData.led_state)
+        {
+            case APP_LED_STATE_ON_UP:
+            {
+                if (profile == 1)
+                {
+                    appData.commands = &profile1_on_up;
+                }
+                else if (profile == 2)
+                {
+                    appData.commands = &profile2_on_up;
+                }
+                
+                break;
+            }
+            
+            case APP_LED_STATE_OFF_UP:
+            {
+                if (profile == 1)
+                {
+                    appData.commands = &profile1_off_up;
+                }
+                else if (profile == 2)
+                {
+                    appData.commands = &profile2_off_up;
+                }
+                
+                break;
+            }
+            
+            case APP_LED_STATE_ON_DOWN:
+            {
+                if (profile == 1)
+                {
+                    appData.commands = &profile1_on_down;
+                }
+                else if (profile == 2)
+                {
+                    appData.commands = &profile2_on_down;
+                }
+                
+                break;
+            }
+            
+            case APP_LED_STATE_OFF_DOWN:
+            {
+                if (profile == 1)
+                {
+                    appData.commands = &profile1_off_down;
+                }
+                else if (profile == 2)
+                {
+                    appData.commands = &profile2_off_down;
+                }
+                
+                break;
+            }
+        }
     }
 }
 
