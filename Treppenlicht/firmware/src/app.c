@@ -30,12 +30,13 @@ struct
     
     SYS_TMR_HANDLE delay_timer;
     
+    bool profile_wait_for_finish;
     const Command (*commands)[COMMANDS_MAX][DRV_LEDSTRIP_MAX_NUMBER_LEDS];
     int command_index[DRV_LEDSTRIP_MAX_NUMBER_LEDS];
     CommandState command_state[DRV_LEDSTRIP_MAX_NUMBER_LEDS];
     
     APP_LED_STATE led_state;
-
+    
 } appData;
 
 DRV_LEDSTRIP_INIT ledstrip_init = {
@@ -123,14 +124,50 @@ bool APP_IsChannelActive(uint8_t button_index)
     }
 }
 
+void APP_DimValue(int i_led, const Command* command, CommandState* state, uint16_t dim_value_target)
+{
+    int16_t delta;
+    int16_t step = 0;
+    
+    if (command->dim.dim_value_wait == 0)
+    {
+        step = command->dim.dim_value_step;
+    }
+    else
+    {
+        state->current_wait_time++;
+
+        if (state->current_wait_time >= command->dim.dim_value_wait)
+        {
+            state->current_wait_time = 0;
+            step = 1;
+        }
+    }
+
+    delta = abs(state->current_dim_value - dim_value_target);
+    if (step > delta)
+    {
+        step = delta;
+    }
+    if (state->current_dim_value > dim_value_target)
+    {
+        step = -step;
+    }
+    state->current_dim_value += step;
+
+    if (state->current_dim_value == dim_value_target)
+    {
+        state->current_rand_dim_value = -1;
+        appData.command_index[i_led]++;
+    }
+}
+
 bool APP_UpdateLedStates()
 {
     int i_led;
     const Command* command;
     CommandState* state;
     bool is_everything_finished = true;
-    int16_t step;
-    int16_t delta;
     
     for (i_led = 0; i_led < DRV_LEDSTRIP_MAX_NUMBER_LEDS; i_led++)
     {
@@ -141,6 +178,13 @@ bool APP_UpdateLedStates()
         {
             case COMMAND_END:
             {
+                break;
+            }
+            
+            case COMMAND_REPEAT:
+            {
+                appData.command_index[i_led] = 0;
+                
                 break;
             }
             
@@ -159,41 +203,24 @@ bool APP_UpdateLedStates()
                 break;
             }
             
+            case COMMAND_RANDOM_DIM_LED:
+            {
+                is_everything_finished = false;
+                
+                if (state->current_rand_dim_value == -1)
+                {
+                    state->current_rand_dim_value = rand() % DRV_LEDSTRIP_MAX_DIMMING_VALUE;
+                }
+                APP_DimValue(i_led, command, state, state->current_rand_dim_value);
+                
+                break;
+            }
+            
             case COMMAND_DIM_LED:
             {
                 is_everything_finished = false;
                 
-                step = 0;
-                if (command->dim.dim_value_wait == 0)
-                {
-                    step = command->dim.dim_value_step;
-                }
-                else
-                {
-                    state->current_wait_time++;
-                    
-                    if (state->current_wait_time >= command->dim.dim_value_wait)
-                    {
-                        state->current_wait_time = 0;
-                        step = 1;
-                    }
-                }
-                
-                delta = abs(state->current_dim_value - command->dim.dim_value_target);
-                if (step > delta)
-                {
-                    step = delta;
-                }
-                if (state->current_dim_value > command->dim.dim_value_target)
-                {
-                    step = -step;
-                }
-                state->current_dim_value += step;
-                
-                if (state->current_dim_value == command->dim.dim_value_target)
-                {
-                    appData.command_index[i_led]++;
-                }
+                APP_DimValue(i_led, command, state, command->dim.dim_value_target);
                 
                 break;
             }
@@ -202,7 +229,14 @@ bool APP_UpdateLedStates()
         DRV_LEDSTRIP_DimLight(appData.ledstrip_client, i_led, state->current_dim_value);
     }
     
-    return is_everything_finished;
+    if (appData.profile_wait_for_finish)
+    {
+        return is_everything_finished;
+    }
+    else
+    {
+        return true;
+    }
 }
 
 void APP_LoadProfile()
@@ -232,7 +266,15 @@ void APP_LoadProfile()
         }
     }
     
-    if (APP_IsChannelActive(BUTTON_3))
+    if (APP_IsChannelActive(BUTTON_3) && APP_IsChannelActive(BUTTON_4))
+    {
+        profile = 4;
+    }
+    else if (APP_IsChannelActive(BUTTON_4))
+    {
+        profile = 3;
+    }
+    else if (APP_IsChannelActive(BUTTON_3))
     {
         profile = 2;
     }
@@ -243,10 +285,13 @@ void APP_LoadProfile()
     
     if (appData.led_state != last_state)
     {
+        appData.profile_wait_for_finish = profile_wait_for_finish[profile-1];
+        
         for (i_led = 0; i_led < DRV_LEDSTRIP_MAX_NUMBER_LEDS; i_led++)
         {
             appData.command_index[i_led] = 0;
             appData.command_state[i_led].current_wait_time = 0;
+            appData.command_state[i_led].current_rand_dim_value = -1;
         }
         
         switch (appData.led_state)
@@ -260,6 +305,14 @@ void APP_LoadProfile()
                 else if (profile == 2)
                 {
                     appData.commands = &profile2_on_up;
+                }
+                else if (profile == 3)
+                {
+                    appData.commands = &profile3_on_up;
+                }
+                else if (profile == 4)
+                {
+                    appData.commands = &profile4_on_up;
                 }
                 
                 break;
@@ -275,6 +328,14 @@ void APP_LoadProfile()
                 {
                     appData.commands = &profile2_off_up;
                 }
+                else if (profile == 3)
+                {
+                    appData.commands = &profile3_off_up;
+                }
+                else if (profile == 4)
+                {
+                    appData.commands = &profile4_off_up;
+                }
                 
                 break;
             }
@@ -289,6 +350,14 @@ void APP_LoadProfile()
                 {
                     appData.commands = &profile2_on_down;
                 }
+                else if (profile == 3)
+                {
+                    appData.commands = &profile3_on_down;
+                }
+                else if (profile == 4)
+                {
+                    appData.commands = &profile4_on_down;
+                }
                 
                 break;
             }
@@ -302,6 +371,14 @@ void APP_LoadProfile()
                 else if (profile == 2)
                 {
                     appData.commands = &profile2_off_down;
+                }
+                else if (profile == 3)
+                {
+                    appData.commands = &profile3_off_down;
+                }
+                else if (profile == 4)
+                {
+                    appData.commands = &profile4_off_down;
                 }
                 
                 break;
